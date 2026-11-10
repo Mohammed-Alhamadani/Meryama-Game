@@ -73,3 +73,16 @@ home();
 `,context);
 assert.equal(timers.size,0);
 console.log('Passed: all 12 table charts and practice selections.');
+
+vm.runInContext(`
+savedLevel=3;home();
+const map=renderMap();
+if(map.split('data-level=').length-1!==8)throw Error('Map must have eight arithmetic locations');
+for(let i=0;i<8;i++){
+ if(!map.includes('data-level="'+i+'"'))throw Error('Missing location');
+ start(i);if(selected!==i||current.kind!==levels[i].kind)throw Error('Location lesson mismatch');
+}
+if(!map.includes('aria-current="step"')||!map.includes('Castle Cove'))throw Error('Map landmarks');
+home();
+`,context);
+console.log('Passed: eight map destinations, lesson mapping and current location.');
