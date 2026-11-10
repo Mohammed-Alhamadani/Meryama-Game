@@ -2,10 +2,12 @@
 const levels=[
 ['Little sums','Add within 10','add',10],['Plus and minus','Add and subtract within 20','mixed',20],['Two-digit explorers','Two-digit numbers without carrying or borrowing','tens',99],['Cross the tens','Two-digit addition with carrying','carry',99],['Borrow a ten','Two-digit subtraction with borrowing','borrow',99],['Find x','Missing numbers: x + 5 = 10','missing',20],['Bigger mysteries','Missing numbers with two-digit numbers','missing',99],['Three-number challenge','Add and subtract three numbers','three',99]
 ].map(([title,description,kind,max])=>({title,description,kind,max}));
+for(let table=1;table<=12;table++)levels.push({title:`${table} times table`,description:`Practice ${table} times 1 through 12`,kind:'multiply',max:table*12,table});
 function generate(index,random=Math.random){
 const s=levels[index],n=(lo,hi)=>lo+Math.floor(random()*(hi-lo+1));
 let a,b,c,answer,equation,help,op='+';
-if(s.kind==='add'||s.kind==='mixed'){a=n(1,s.max-1);b=n(1,s.max-a);if(s.kind==='mixed'&&random()<.5){a+=b;op='−';}}
+if(s.kind==='multiply'){a=s.table;b=n(1,12);answer=a*b;op='\u00d7';equation=`${a} ${op} ${b} = ?`;help=`${a} groups of ${b}: ${Array(a).fill(b).join(' + ')}. Add the groups together.`;}
+else if(s.kind==='add'||s.kind==='mixed'){a=n(1,s.max-1);b=n(1,s.max-a);if(s.kind==='mixed'&&random()<.5){a+=b;op='−';}}
 else if(s.kind==='tens'){const at=n(1,7),bt=n(1,9-at),au=n(0,9),bu=n(0,9-au);a=at*10+au;b=bt*10+bu;if(random()<.5){a+=b;op='−';}}
 else if(s.kind==='carry'){const at=n(1,7),bt=n(1,8-at),au=n(1,9),bu=n(10-au,9);a=at*10+au;b=bt*10+bu;}
 else if(s.kind==='borrow'){const at=n(2,9),bt=n(1,at-1),au=n(0,8),bu=n(au+1,9);a=at*10+au;b=bt*10+bu;op='−';}

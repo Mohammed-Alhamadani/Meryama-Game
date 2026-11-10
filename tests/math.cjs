@@ -7,18 +7,19 @@ for(let level=0;level<math.levels.length;level++){
   const q=math.generate(level);
   assert.equal(new Set(q.choices).size,4);
   assert(q.choices.includes(q.answer));
-  assert(q.choices.every(n=>Number.isInteger(n)&&n>=0&&n<=99));
-  const eq=q.equation.replaceAll('x',String(q.answer)).replaceAll('?',String(q.answer)).replaceAll('−','-');
-  assert(/^[0-9 +\-=]+$/.test(eq));
+  assert(q.choices.every(n=>Number.isInteger(n)&&n>=0&&n<=math.levels[level].max));
+  const eq=q.equation.replaceAll('\u00d7','*').replaceAll('x',String(q.answer)).replaceAll('?',String(q.answer)).replaceAll('−','-');
+  assert(/^[0-9 +*\-=]+$/.test(eq));
   const [left,right]=eq.split('=');
   assert.equal(vm.runInNewContext(left),Number(right),q.equation);
   if(level>=2&&level<=4){assert(q.a>=10&&q.b>=10);}
   if(level===3)assert(q.a%10+q.b%10>=10);
   if(level===4)assert(q.a%10<q.b%10);
+  if(level>=8){assert.equal(q.a,level-7);assert(q.b>=1&&q.b<=12);assert.equal(q.answer,q.a*q.b);}
   if(level===2)assert(q.op==='+'?q.a%10+q.b%10<10:q.a%10>=q.b%10);
  }
  assert.equal(math.advance(level,3),level);
- assert.equal(math.advance(level,4),Math.min(level+1,7));
+ assert.equal(math.advance(level,4),Math.min(level+1,math.levels.length-1));
 }
 const nodes={};const node=()=>({innerHTML:'',textContent:'',hidden:false,disabled:false,classList:{add(){}}});
 let now=0;const timers=new Set();let timerCount=0;
@@ -32,10 +33,10 @@ start(1);
 for(let i=0;i<5;i++){hint();check({dataset:{value:current.answer},classList:{add(){}}});if(i<4)question();}
 finish();if(savedLevel!==1)throw Error('Assisted answers advanced');
 start(0);independent=0;finish();if(savedLevel!==1)throw Error('Replay reset progress');
-start(7);independent=5;finish();if(savedLevel!==7)throw Error('Final level');
+start(levels.length-1);independent=5;finish();if(savedLevel!==levels.length-1)throw Error('Final level');
 `,context);
-assert.equal(store['garden-level'],'7');
-console.log('Passed: 8,000 equations, level constraints, choices, promotion, hints, saved progress, replay and final level.');
+assert.equal(store['garden-level'],String(math.levels.length-1));
+console.log('Passed: 20,000 equations, level constraints, choices, promotion, hints, saved progress, replay and final level.');
 
 vm.runInContext(`
 if([0,1,2,3,4,5].map(gradeFor).join(',')!=='D,C,B,B+,A,A+')throw Error('Grades');
@@ -60,3 +61,15 @@ assert(nodes['#app'].innerHTML.includes('grade-badge'));
 vm.runInContext('start(0);home()',context);
 assert.equal(timers.size,0);
 console.log('Passed: vertical layout, grade scale, elapsed timer, stop at last answer, results, exit cleanup.');
+
+vm.runInContext(`
+for(let table=1;table<=12;table++){
+ showTable(table);
+ if(!document.querySelector('#table-facts').innerHTML.includes('<strong>'+table*12+'</strong>'))throw Error('Table chart');
+ start(7+table);
+ if(current.kind!=='multiply'||current.a!==table)throw Error('Table selection');
+}
+home();
+`,context);
+assert.equal(timers.size,0);
+console.log('Passed: all 12 table charts and practice selections.');

@@ -1,6 +1,6 @@
 # Meryama Application
 
-A browser-based math practice app with eight progressive levels, vertical arithmetic, missing-number puzzles, a round timer, and letter grades.
+A browser-based math practice app with eight arithmetic levels and multiplication tables 1 through 12, vertical arithmetic, missing-number puzzles, a round timer, and letter grades.
 
 Open `index.html` locally, or visit the GitHub Pages website. Stars and level progress save in each browser separately.
 
