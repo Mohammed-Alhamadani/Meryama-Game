@@ -86,3 +86,19 @@ if(!map.includes('aria-current="step"')||!map.includes('Castle Cove'))throw Erro
 home();
 `,context);
 console.log('Passed: eight map destinations, lesson mapping and current location.');
+
+vm.runInContext(`
+start(0);
+const beforeStars=stars;
+const wrong=current.choices.find(value=>value!==current.answer);
+check({dataset:{value:wrong},classList:{add(){}}});
+if(!document.querySelector('#answer-effects').innerHTML.includes('try-again-party'))throw Error('Missing encouragement');
+if(locked||stars!==beforeStars)throw Error('Wrong answer must allow retry without reward');
+check({dataset:{value:current.answer},classList:{add(){}}});
+if(!document.querySelector('#answer-effects').innerHTML.includes('confetti-piece'))throw Error('Missing correct celebration');
+if(stars!==beforeStars+1||independent!==0)throw Error('Assisted reward regression');
+check({dataset:{value:current.answer},classList:{add(){}}});
+if(stars!==beforeStars+1)throw Error('Double reward');
+home();
+`,context);
+console.log('Passed: wrong-answer encouragement, correct confetti, retry and reward rules.');
